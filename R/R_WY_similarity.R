@@ -93,4 +93,14 @@ wy_comparison$SimilarWY<-similarwy
 
 write.csv(wy_comparison,file=file.path(output_root,"WaterYear_Calsim_comparison.csv"),row.names=F)
 
-          
+#Run NMDS
+nmds = metaMDS(data_dayflow_edit, distance = "euclidean",autotransform = F)
+nmds
+
+site.scrs <- as.data.frame(scores(nmds, display = "sites")) #save NMDS results into dataframe
+site.scrs$WY<- row.names(wy_dist)
+site.scrs
+
+nmds.plot.dune <- ggplot(data=site.scrs, aes(x=NMDS1, y=NMDS2,label=WY))+geom_point()+geom_text() 
+
+nmds.plot.dune
