@@ -151,15 +151,27 @@ OMR_ROR=data.frame(Date=rmt.java.exc.OMR$times %>% from_time_stamp,OMR_ROR=rmt.j
 
 #######
 #Combine results
+
+#Note that outflow data is sum instead of mean (see Smith et al. 2021)
 DeltaOutflow<-left_join(DeltaOutflow_D1641,DeltaOutflow_NAA) %>% left_join(DeltaOutflow_ROR) %>% mutate(Year=year(Date),Month=month(Date)) %>% 
   #Filter June-August per Smith et al. 2021
   filter(Month %in% c(6:8)) %>% 
   #Filter year 1995-2016 for Delta Smelt LCM
   filter(Year %in% c(1993:2016)) %>%
+  #sum flow by month
+  mutate(SumOutflow_Jun_Aug_D1641=case_when(Month==6 ~ DeltaOutflow_D1641*30,
+                                            Month==7 ~DeltaOutflow_D1641*31,
+                                            Month==8 ~DeltaOutflow_D1641*31),
+         SumOutflow_Jun_Aug_NAA=case_when(Month==6 ~ DeltaOutflow_NAA*30,
+                                            Month==7 ~DeltaOutflow_NAA*31,
+                                            Month==8 ~DeltaOutflow_NAA*31),
+         SumOutflow_Jun_Aug_ROR=case_when(Month==6 ~ DeltaOutflow_ROR*30,
+                                          Month==7 ~DeltaOutflow_ROR*31,
+                                          Month==8 ~DeltaOutflow_ROR*31)) %>%
   #summarize by year
-  group_by(Year) %>% summarise(DeltaOutflow_Jun_Aug_D1641=mean(DeltaOutflow_D1641),
-                               DeltaOutflow_Jun_Aug_NAA=mean(DeltaOutflow_NAA),
-                               DeltaOutflow_Jun_Aug_ROR=mean(DeltaOutflow_ROR))
+  group_by(Year) %>% summarise(DeltaOutflow_Jun_Aug_D1641=sum(SumOutflow_Jun_Aug_D1641),
+                               DeltaOutflow_Jun_Aug_NAA=sum(SumOutflow_Jun_Aug_NAA),
+                               DeltaOutflow_Jun_Aug_ROR=sum(SumOutflow_Jun_Aug_ROR))
 
 OMR_Apr_May<-left_join(OMR_D1641,OMR_NAA) %>% left_join(OMR_ROR) %>% mutate(Year=year(Date),Month=month(Date)) %>% 
   #Filter Apr-May per Smith et al. 2021
