@@ -56,7 +56,12 @@ lfs_data <- lfs_data %>% mutate(dummydate = case_when(
                  strip.background = element_rect(size=0.3)) + 
   ggplot2::ylab("Cumulative Loss")+ggplot2::xlab(NULL)+
   ggplot2::scale_x_date(date_labels = "%b",date_breaks  ="1 month")+
-  ggplot2::geom_hline(yintercept=100, linetype="dashed", color = "red")+
-  ylim(0,600)
+  ggplot2::geom_hline(yintercept=576, linetype="dashed", color = "red")+
+  ylim(0,1000)
 
 plot_longfin
+
+
+annual_data <- lfs_data %>% group_by(WY) %>% summarise(salvage=sum(Salvage))
+
+test <- lfs_data %>% filter(WY==2020)
